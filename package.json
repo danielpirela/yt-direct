@@ -1,0 +1,30 @@
+{
+  "name": "yt-direct",
+  "version": "1.0.0",
+  "description": "YouTube Direct URL Extractor",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "prebuild:mac": "bash prebuild.sh mac",
+    "prebuild:win": "bash prebuild.sh win",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:all": "npm run build:mac && npm run build:win"
+  },
+  "build": {
+    "appId": "com.snickerland.yt-direct",
+    "productName": "YT Direct URL",
+    "files": ["main.js", "preload.js", "renderer.html"],
+    "extraResources": [
+      { "from": "bin/yt-dlp${ext}", "to": "yt-dlp${ext}" }
+    ],
+    "mac": { "target": "dmg", "identity": null },
+    "win": { "target": "portable" }
+  },
+  "author": "Snickerland",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^43.2.0",
+    "electron-builder": "^26.15.3"
+  }
+}

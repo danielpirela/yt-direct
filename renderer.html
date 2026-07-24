@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YT Direct URL</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: #1a1a2e;
+    color: #e0e0e0;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+  }
+  .card {
+    background: #16213e; border-radius: 12px;
+    padding: 32px; width: 100%; max-width: 520px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  h1 { font-size: 1.4rem; color: #e94560; margin-bottom: 8px; text-align: center; }
+  p.sub { font-size: 0.85rem; color: #888; text-align: center; margin-bottom: 20px; }
+  input {
+    width: 100%; padding: 12px; border: 2px solid #333;
+    border-radius: 8px; background: #0f3460; color: #e0e0e0;
+    font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+  }
+  input:focus { border-color: #e94560; }
+  button {
+    width: 100%; padding: 12px; margin-top: 12px;
+    background: #e94560; color: #fff; border: none; border-radius: 8px;
+    font-size: 1rem; font-weight: 600; cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+  button:hover { background: #d63852; }
+  button:active { transform: scale(0.98); }
+  button:disabled { background: #555; cursor: not-allowed; transform: none; }
+  .loader { text-align: center; padding: 20px; color: #e94560; display: none; }
+  .loader.visible { display: block; }
+  .error { background: rgba(233,69,96,0.15); border: 1px solid #e94560;
+    border-radius: 8px; padding: 12px; margin-top: 12px; display: none;
+    font-size: 0.85rem; color: #f08080; }
+  .error.visible { display: block; }
+  .result { margin-top: 16px; display: none; }
+  .result.visible { display: block; }
+  .result .thumb {
+    width: 100%; height: 160px; object-fit: cover; border-radius: 8px;
+    margin-bottom: 12px; background: #0f3460;
+  }
+  .result .title {
+    font-size: 1rem; font-weight: 600; margin-bottom: 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .result .meta {
+    font-size: 0.8rem; color: #888; margin-bottom: 10px;
+  }
+  .url-box {
+    background: #0f3460; border: 2px solid #333; border-radius: 8px;
+    padding: 10px; font-size: 0.75rem; word-break: break-all;
+    color: #4ecca3; margin-bottom: 8px; max-height: 80px; overflow-y: auto;
+  }
+  .copy-btn {
+    background: #4ecca3; color: #1a1a2e;
+  }
+  .copy-btn:hover { background: #3db88e; }
+  .copied { color: #4ecca3; text-align: center; font-size: 0.8rem; display: none; }
+  .copied.visible { display: block; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>🎬 YT Direct URL</h1>
+  <p class="sub">Pegá una URL de YouTube y obtené la URL directa del video</p>
+
+  <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=..." autofocus>
+  <button id="extractBtn" onclick="extract()">🔗 Extraer URL</button>
+
+  <div class="loader" id="loader">⏳ Extrayendo…</div>
+  <div class="error" id="error"></div>
+
+  <div class="result" id="result">
+    <img class="thumb" id="thumb" src="" alt="">
+    <div class="title" id="title"></div>
+    <div class="meta" id="meta"></div>
+    <div class="url-box" id="urlBox"></div>
+    <button class="copy-btn" id="copyBtn" onclick="copyUrl()">📋 Copiar URL</button>
+    <div class="copied" id="copied">✅ Copiado!</div>
+  </div>
+</div>
+
+<script>
+let currentUrl = ''
+
+async function extract() {
+  const input = document.getElementById('urlInput').value.trim()
+  if (!input) return
+
+  setState('loading')
+  try {
+    const data = await window.api.extract(input)
+    currentUrl = data.url
+    document.getElementById('thumb').src = data.thumbnail || ''
+    document.getElementById('title').textContent = data.title
+    document.getElementById('meta').textContent = `${data.quality} · ${data.duration}`
+    document.getElementById('urlBox').textContent = data.url
+    setState('result')
+  } catch (e) {
+    document.getElementById('error').textContent = '❌ ' + (e.message || 'Error al conectar')
+    setState('error')
+  }
+}
+
+async function copyUrl() {
+  navigator.clipboard.writeText(currentUrl)
+  document.getElementById('copied').classList.add('visible')
+  setTimeout(() => document.getElementById('copied').classList.remove('visible'), 2000)
+}
+
+function setState(state) {
+  document.getElementById('loader').classList.toggle('visible', state === 'loading')
+  document.getElementById('error').classList.toggle('visible', state === 'error')
+  document.getElementById('result').classList.toggle('visible', state === 'result')
+  document.getElementById('extractBtn').disabled = state === 'loading'
+}
+
+document.getElementById('urlInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') extract()
+})
+</script>
+</body>
+</html>
