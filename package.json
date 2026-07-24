@@ -5,22 +5,24 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
-    "prebuild:mac": "bash prebuild.sh mac",
-    "prebuild:win": "bash prebuild.sh win",
-    "build:mac": "electron-builder --mac",
-    "build:win": "electron-builder --win",
-    "build:all": "npm run build:mac && npm run build:win"
+    "prebuild": "bash prebuild.sh win",
+    "build": "electron-builder --win"
   },
   "build": {
     "appId": "com.snickerland.yt-direct",
     "productName": "YT Direct URL",
     "files": ["main.js", "preload.js", "renderer.html"],
     "extraResources": [
-      { "from": "bin/yt-dlp", "to": "yt-dlp" },
       { "from": "bin/yt-dlp.exe", "to": "yt-dlp.exe" }
     ],
-    "mac": { "target": "dmg", "identity": null, "icon": "icon.png" },
-    "win": { "target": "portable", "icon": "icon.png" }
+    "win": {
+      "target": "nsis",
+      "icon": "icon.png",
+      "sign": null
+    },
+    "nsis": {
+      "oneClick": true
+    }
   },
   "author": "Snickerland",
   "license": "ISC",
