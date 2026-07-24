@@ -4,76 +4,106 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>YT Direct URL</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --dirt-dark: #2D1B0E; --dirt: #5C3A1E; --stone: #8B8B8B;
+    --stone-dark: #4A4A4A; --grass: #5B8731; --grass-light: #7EC850;
+    --gold: #FFAA00; --gold-bright: #FFD700; --redstone: #AA3333;
+    --redstone-light: #CC5555; --text: #F5F5DC; --text-muted: #B8A88A;
+    --surface: rgba(139,139,139,0.24); --surface-strong: rgba(139,139,139,0.48);
+    --line: rgba(74,74,74,0.6); --bg-base: #2D1B0E;
+    --font-display: 'Press Start 2P', monospace; --font-sans: 'VT323', 'Courier New', monospace;
+  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: 'Segoe UI', system-ui, sans-serif;
-    background: #1a1a2e;
-    color: #e0e0e0;
+    color: var(--text); font-family: var(--font-sans); font-size: 1.25rem;
+    background-color: var(--bg-base);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 7px, rgba(74,74,74,0.06) 7px, rgba(74,74,74,0.06) 8px),
+      repeating-linear-gradient(90deg, transparent, transparent 7px, rgba(74,74,74,0.04) 7px, rgba(74,74,74,0.04) 8px);
     display: flex; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 20px;
+    min-height: 100vh; padding: 20px; image-rendering: pixelated;
   }
   .card {
-    background: #16213e; border-radius: 12px;
-    padding: 32px; width: 100%; max-width: 520px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    border: 4px solid var(--stone-dark); background: linear-gradient(180deg, var(--surface-strong), var(--surface));
+    box-shadow: 4px 4px 0 0 rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.15);
+    image-rendering: pixelated; padding: 28px 32px; width: 100%; max-width: 520px;
   }
-  h1 { font-size: 1.4rem; color: #e94560; margin-bottom: 8px; text-align: center; }
-  p.sub { font-size: 0.85rem; color: #888; text-align: center; margin-bottom: 20px; }
-  input {
-    width: 100%; padding: 12px; border: 2px solid #333;
-    border-radius: 8px; background: #0f3460; color: #e0e0e0;
-    font-size: 0.95rem; outline: none; transition: border-color 0.2s;
+  h1 {
+    font-family: var(--font-display); font-size: 0.55rem; color: var(--gold-bright);
+    text-align: center; margin-bottom: 6px; letter-spacing: 0.02em;
   }
-  input:focus { border-color: #e94560; }
-  button {
-    width: 100%; padding: 12px; margin-top: 12px;
-    background: #e94560; color: #fff; border: none; border-radius: 8px;
-    font-size: 1rem; font-weight: 600; cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+  p.sub {
+    font-family: var(--font-sans); font-size: 1.1rem; color: var(--text-muted);
+    text-align: center; margin-bottom: 20px;
   }
-  button:hover { background: #d63852; }
-  button:active { transform: scale(0.98); }
-  button:disabled { background: #555; cursor: not-allowed; transform: none; }
-  .loader { text-align: center; padding: 20px; color: #e94560; display: none; }
+  .mc-input {
+    border: 3px solid var(--stone-dark); background: #1A0F05; color: var(--text);
+    font-family: var(--font-sans); font-size: 1.25rem; padding: 0.6rem 0.8rem;
+    outline: none; width: 100%; image-rendering: pixelated;
+  }
+  .mc-input:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(255,170,0,0.2); }
+  .mc-btn {
+    width: 100%; border: 3px solid #2D1B0E;
+    background: linear-gradient(180deg, var(--grass-light), var(--grass));
+    color: #F5F5DC; font-family: var(--font-display); font-size: 0.55rem;
+    padding: 0.75rem 1.5rem; cursor: pointer;
+    box-shadow: 2px 2px 0 0 rgba(0,0,0,0.4); image-rendering: pixelated;
+    transition: transform 80ms ease; margin-top: 12px;
+  }
+  .mc-btn:hover { transform: translateY(-2px); box-shadow: 4px 4px 0 0 rgba(0,0,0,0.5); }
+  .mc-btn:active { transform: translateY(0); box-shadow: 1px 1px 0 0 rgba(0,0,0,0.3); }
+  .mc-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .mc-btn-secondary {
+    background: var(--stone); border-color: var(--stone-dark);
+  }
+  .loader {
+    text-align: center; padding: 16px; color: var(--gold); display: none;
+    font-family: var(--font-display); font-size: 0.45rem;
+  }
   .loader.visible { display: block; }
-  .error { background: rgba(233,69,96,0.15); border: 1px solid #e94560;
-    border-radius: 8px; padding: 12px; margin-top: 12px; display: none;
-    font-size: 0.85rem; color: #f08080; }
+  .error {
+    border: 3px solid var(--redstone); background: rgba(170,51,51,0.15);
+    padding: 12px; margin-top: 12px; display: none;
+    font-family: var(--font-sans); font-size: 1.15rem;
+    color: var(--redstone-light); image-rendering: pixelated;
+  }
   .error.visible { display: block; }
   .result { margin-top: 16px; display: none; }
   .result.visible { display: block; }
   .result .thumb {
-    width: 100%; height: 160px; object-fit: cover; border-radius: 8px;
-    margin-bottom: 12px; background: #0f3460;
+    width: 100%; height: 160px; object-fit: cover;
+    border: 3px solid var(--stone-dark); image-rendering: auto;
   }
   .result .title {
-    font-size: 1rem; font-weight: 600; margin-bottom: 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: var(--font-display); font-size: 0.4rem; color: var(--text);
+    margin-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .result .meta {
-    font-size: 0.8rem; color: #888; margin-bottom: 10px;
+    font-family: var(--font-sans); font-size: 1.15rem; color: var(--text-muted); margin-top: 2px;
   }
   .url-box {
-    background: #0f3460; border: 2px solid #333; border-radius: 8px;
-    padding: 10px; font-size: 0.75rem; word-break: break-all;
-    color: #4ecca3; margin-bottom: 8px; max-height: 80px; overflow-y: auto;
+    border: 3px solid var(--grass); background: rgba(91,135,49,0.1);
+    padding: 10px; font-size: 0.9rem; font-family: var(--font-sans);
+    word-break: break-all; color: var(--text); margin-top: 8px;
+    max-height: 80px; overflow-y: auto; image-rendering: pixelated;
   }
-  .copy-btn {
-    background: #4ecca3; color: #1a1a2e;
+  .copied {
+    color: var(--grass-light); text-align: center; font-size: 1.1rem;
+    font-family: var(--font-sans); display: none; margin-top: 4px;
+    image-rendering: pixelated;
   }
-  .copy-btn:hover { background: #3db88e; }
-  .copied { color: #4ecca3; text-align: center; font-size: 0.8rem; display: none; }
   .copied.visible { display: block; }
 </style>
 </head>
 <body>
 <div class="card">
-  <h1>🎬 YT Direct URL</h1>
+  <h1>YT → URL</h1>
   <p class="sub">Pegá una URL de YouTube y obtené la URL directa del video</p>
 
-  <input type="text" id="urlInput" placeholder="https://www.youtube.com/watch?v=..." autofocus>
-  <button id="extractBtn" onclick="extract()">🔗 Extraer URL</button>
+  <input type="text" id="urlInput" class="mc-input" placeholder="https://www.youtube.com/watch?v=..." autofocus>
+  <button id="extractBtn" class="mc-btn" onclick="extract()">Extraer URL</button>
 
   <div class="loader" id="loader">⏳ Extrayendo…</div>
   <div class="error" id="error"></div>
@@ -83,8 +113,8 @@
     <div class="title" id="title"></div>
     <div class="meta" id="meta"></div>
     <div class="url-box" id="urlBox"></div>
-    <button class="copy-btn" id="copyBtn" onclick="copyUrl()">📋 Copiar URL</button>
-    <div class="copied" id="copied">✅ Copiado!</div>
+    <button class="mc-btn mc-btn-secondary" id="copyBtn" onclick="copyUrl()">Copiar URL</button>
+    <div class="copied" id="copied">¡Copiado!</div>
   </div>
 </div>
 
@@ -94,7 +124,6 @@ let currentUrl = ''
 async function extract() {
   const input = document.getElementById('urlInput').value.trim()
   if (!input) return
-
   setState('loading')
   try {
     const data = await window.api.extract(input)
@@ -105,7 +134,7 @@ async function extract() {
     document.getElementById('urlBox').textContent = data.url
     setState('result')
   } catch (e) {
-    document.getElementById('error').textContent = '❌ ' + (e.message || 'Error al conectar')
+    document.getElementById('error').textContent = 'Error: ' + (e.message || 'No se pudo extraer')
     setState('error')
   }
 }
