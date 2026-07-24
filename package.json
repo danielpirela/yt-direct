@@ -16,7 +16,7 @@
     "productName": "YT Direct URL",
     "files": ["main.js", "preload.js", "renderer.html"],
     "extraResources": [
-      { "from": "bin/yt-dlp${ext}", "to": "yt-dlp${ext}" }
+      { "from": "bin/yt-dlp", "to": "yt-dlp" }
     ],
     "mac": { "target": "dmg", "identity": null },
     "win": { "target": "portable" }
